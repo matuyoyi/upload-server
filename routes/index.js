@@ -45,16 +45,20 @@ router.post('/upload-file', (req, res, next) => {
         const sheetsList = _.filter(originData, function(data) {
             return data.data.length > 0;
         });
+        const arr = []
+        function getObject(arr1, arr2) {
+            let obj = {}
+            for(let i = 0;i < arr1.length; i++) {
+                obj[arr1[i]] = arr2[i]
+            }
+            return obj;
+        }
         _.each(sheetsList, (sheet) => {
             fileData = [];
             const columns = sheet.data.shift(); 			// columns
-            const excelRowData = {};
             _.each(sheet.data, (row) => {
-                _.each(row, (item, i) => {
-                    excelRowData[columns[i]] = item;
-                })
+                const excelRowData = getObject(columns,row);
                 generateData(excelRowData);
-                console.log(fileData)
             })
             resData.push({
                 columns,
