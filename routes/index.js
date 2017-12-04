@@ -56,8 +56,17 @@ router.post('/upload-file', (req, res, next) => {
         _.each(sheetsList, (sheet) => {
             fileData = [];
             const columns = sheet.data.shift(); 			// columns
+            _.each(columns, (item, i) => {
+                if(item.indexOf('时间') > -1 || item.indexOf('日期') > -1 || item.indexOf('time') > -1 || item.indexOf('date') > -1 ) {
+                    timeIndex = i;
+                }
+            })
             _.each(sheet.data, (row) => {
-                const excelRowData = getObject(columns,row);
+                let rowArr = [];
+                _.each(row, (item, index) => {
+                    index === timeIndex ? rowArr.push((new Date(1900, 0, item)).toLocaleString()) : rowArr.push(item);
+                })
+                const excelRowData = getObject(columns,rowArr);
                 generateData(excelRowData);
             })
             resData.push({
@@ -123,39 +132,3 @@ function sendMail(param) {
 }
 
 module.exports = router;
-
-
-/* 
-for (let i = 0; i < fileData.length; i++) {
-    for(let value in fileData[i]) {
-        if(value === '时间') {
-            if(fileData[i][value].length>8) {
-                let tempData = fileData[i][value].replace(/[:\s-\\]/g, '');
-                let time = tempData.slice(8);
-                if(parseInt(time) >= 90000) {
-                    let emailAddress = fileData[i].邮箱;
-                    let currentNum = fileData[i].工号;
-                    let currentName = fileData[i].姓名;
-                    let currentTime = fileData[i].时间;
-                    sendMail({emailAddress, currentNum, currentName, currentTime});
-                }
-            }
-        }
-    }
-} */
-/* for (var j = 0; j < originalData[i].length; j++) {
-    if(i === 0) {
-        columns.push(originalData[i][j])
-        if(originalData[i][j].indexOf('时间') > -1
-        || originalData[i][j].indexOf('日期') > -1
-        || originalData[i][j].indexOf('time') > -1
-        || originalData[i][j].indexOf('date') > -1) {
-            timeIndex = j;
-        }
-    }
-    if (timeIndex) {
-        if(!isNaN(originalData[i][timeIndex])) {
-            originalData[i][timeIndex] = (new Date(1900, 0, originalData[i][timeIndex])).toLocaleString();
-        }
-    }
-} */
