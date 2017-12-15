@@ -82,7 +82,7 @@ router.post('/upload-file', (req, res, next) => {
         res.send(resData);
         
     } else if(suffix === 'docx') {
-        const filePath = '/home/'+fileName;
+        const filePath = './public/upload/'+fileName;
         req.files.file.mv(filePath,  function(err) {
             if (err) {
                 return res.status(500).send(err);
